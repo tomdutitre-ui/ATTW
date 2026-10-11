@@ -1,0 +1,844 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="ATTW">
+<meta name="application-name" content="ATTW">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#F6F4FF">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>Any Time To Work</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout : maquette téléphone centrée sur desktop, plein écran sur mobile. Univers de marque assumé, un seul thème clair. */
+:root{
+  --indigo:#1E00A8; --indigo-2:#2F17C4; --indigo-ink:#13006B;
+  --pink:#FF3DB4; --pink-soft:#FFE3F4;
+  --lilac:#EEEAFF; --paper:#FFFFFF; --ground:#F6F4FF;
+  --ink:#16123A; --muted:#6B6690; --line:#E3DFF6;
+  --ok:#0F9D6B; --ok-soft:#DDF6EC; --warn:#C77700; --warn-soft:#FFF1D9; --bad:#D6304A;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Figtree", "Helvetica Neue", system-ui, sans-serif;
+  --r:20px; color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--indigo-ink);color:var(--ink);font-family:var(--body);font-size:15px;margin:0;padding-inline:16px;
+  background-image:radial-gradient(circle at 15% 20%, #3a1fd0 0, transparent 40%),radial-gradient(circle at 85% 85%, #5a0f8a 0, transparent 35%);}
+.stage{min-height:100%;display:flex;align-items:center;justify-content:center;gap:48px;padding-block:24px}
+.aside{color:#fff;max-width:300px}
+.aside h1{font-family:var(--display);font-weight:800;font-size:44px;line-height:1;margin:16px 0 12px;text-wrap:balance}
+.aside p{color:#CFC8FF;line-height:1.55;margin:0 0 10px}
+.aside .roles{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.aside .roles button{font:600 14px var(--body);border:1.5px solid #6d5cf0;background:transparent;color:#fff;border-radius:99px;padding:9px 14px;cursor:pointer}
+.aside .roles button.on{background:var(--pink);border-color:var(--pink)}
+.phone{position:relative;width:390px;height:min(844px,calc(100vh - 48px));min-height:640px;background:var(--ground);border-radius:46px;overflow:hidden;
+  box-shadow:0 0 0 10px #0b0040,0 0 0 11px #2b1a9c,0 40px 80px rgba(0,0,0,.5);display:flex;flex-direction:column}
+@media (max-width:820px){.aside{display:none}}
+@media (max-width:500px){body{padding-inline:0}.stage{padding-block:0}.phone{width:100%;height:100vh;height:100dvh;min-height:0;border-radius:0;box-shadow:none}}
+button{font-family:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* Header */
+.hd{display:flex;align-items:center;gap:10px;padding:18px 18px 10px;background:var(--ground)}
+.hd .brand{border:0;background:none;padding:0;cursor:pointer;display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:800;font-size:20px;color:var(--indigo);letter-spacing:-.01em}
+.hd .sp{flex:1}
+.icbtn{width:42px;height:42px;border-radius:14px;border:0;background:var(--paper);display:grid;place-items:center;cursor:pointer;position:relative;box-shadow:0 2px 0 var(--line)}
+.icbtn .badge{position:absolute;top:-4px;right:-4px;min-width:18px;height:18px;border-radius:9px;background:var(--pink);color:#fff;font:700 11px var(--body);display:grid;place-items:center;padding:0 4px}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 18px 24px}
+.content::-webkit-scrollbar{width:0}
+
+/* Tabbar */
+.tabbar{display:flex;background:var(--paper);border-top:1px solid var(--line);padding:8px 10px calc(10px + env(safe-area-inset-bottom,0px))}
+.tabbar button{flex:1;border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:3px;font:600 11px var(--body);color:var(--muted);cursor:pointer;padding:6px 0;border-radius:14px}
+.tabbar button.on{color:var(--indigo)}
+.tabbar button.on svg{stroke:var(--indigo)}
+.tabbar .pub{background:var(--pink);color:#fff!important;margin:0 6px}
+.tabbar .pub svg{stroke:#fff!important}
+
+/* Type */
+.h1{font-family:var(--display);font-weight:800;font-size:30px;line-height:1.02;letter-spacing:-.02em;margin:6px 0 14px;text-wrap:balance}
+.h1 em{font-style:normal;color:var(--pink)}
+.h2{font-family:var(--display);font-weight:700;font-size:19px;margin:22px 0 10px;display:flex;align-items:baseline;gap:8px}
+.h2 small{font:500 13px var(--body);color:var(--muted)}
+.lbl{font:700 11px var(--body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.muted{color:var(--muted)}
+
+/* Dispo strip */
+.dispo{background:var(--indigo);color:#fff;border-radius:24px;padding:14px 0 14px 14px;margin-bottom:6px;position:relative;overflow:hidden}
+.dispo::after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:var(--pink);opacity:.9}
+.dispo .top{display:flex;align-items:center;justify-content:space-between;padding-right:14px;position:relative;z-index:1}
+.dispo .top b{font-family:var(--display);font-size:18px}
+.dispo .top button{border:0;background:rgba(255,255,255,.16);color:#fff;border-radius:99px;padding:6px 11px;font:600 12px var(--body);cursor:pointer}
+.dispo p{margin:2px 0 10px;color:#CFC8FF;font-size:13px;position:relative;z-index:1}
+.days{display:flex;gap:7px;overflow-x:auto;padding-right:14px;position:relative;z-index:1;scrollbar-width:none}
+.days::-webkit-scrollbar{display:none}
+.day{flex:0 0 50px;border:0;border-radius:16px;background:rgba(255,255,255,.1);color:#fff;padding:8px 0;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:1px;transition:transform .15s}
+.day span{font:600 10px var(--body);text-transform:uppercase;opacity:.75}
+.day b{font:800 19px var(--display)}
+.day i{width:5px;height:5px;border-radius:50%;background:#9d8cff;font-style:normal}
+.day.on{background:#fff;color:var(--indigo);transform:translateY(-2px)}
+.day.on i{background:var(--pink)}
+
+/* Chips */
+.chips{display:flex;gap:7px;overflow-x:auto;margin:14px -18px 4px;padding:0 18px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1.5px solid var(--line);background:var(--paper);border-radius:99px;padding:8px 13px;font:600 13px var(--body);cursor:pointer;display:flex;align-items:center;gap:6px}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.filter{border-color:var(--indigo);color:var(--indigo)}
+
+/* Mission cards */
+.cards{display:flex;flex-direction:column;gap:14px;margin-top:12px}
+.card{border-radius:26px;padding:18px;cursor:pointer;position:relative;overflow:hidden;border:0;text-align:left;width:100%;transition:transform .15s}
+.card:active{transform:scale(.985)}
+.card .row{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.card .sector{font:700 11px var(--body);text-transform:uppercase;letter-spacing:.08em;padding:5px 9px;border-radius:99px;background:rgba(255,255,255,.55)}
+.card .rate{font-family:var(--display);font-weight:800;font-size:30px;line-height:1;letter-spacing:-.02em;text-align:right}
+.card .rate small{font:600 13px var(--body);display:block;opacity:.7;margin-top:2px}
+.card h3{font-family:var(--display);font-weight:700;font-size:22px;line-height:1.08;margin:16px 0 4px;text-wrap:balance}
+.card .co{font-size:13.5px;opacity:.8;display:flex;align-items:center;gap:6px}
+.card .meta{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.card .meta span{font:600 12.5px var(--body);background:rgba(255,255,255,.6);padding:6px 10px;border-radius:12px;display:flex;align-items:center;gap:5px}
+.card .status{position:absolute;right:18px;bottom:18px}
+.s-event{background:#FFD4EE;color:#4A0A33}
+.s-accueil{background:#D9D3FF;color:#1B0C66}
+.s-admin{background:#CDEBFF;color:#062F4D}
+.s-resto{background:#FFE2C2;color:#4D2600}
+.s-commerce{background:#D3F3DF;color:#083D22}
+.empty{background:var(--paper);border-radius:24px;padding:28px 20px;text-align:center;border:2px dashed var(--line)}
+.empty b{font-family:var(--display);font-size:18px;display:block;margin-bottom:6px}
+
+/* Generic */
+.panel{background:var(--paper);border-radius:var(--r);padding:16px}
+.btn{border:0;border-radius:16px;padding:15px 18px;font:700 15px var(--body);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+.btn.pri{background:var(--pink);color:#fff;box-shadow:0 6px 18px rgba(255,61,180,.35)}
+.btn.ind{background:var(--indigo);color:#fff}
+.btn.ghost{background:var(--lilac);color:var(--indigo)}
+.btn.small{padding:9px 13px;font-size:13px;border-radius:12px}
+.btn.block{width:100%}
+.btn:disabled{opacity:.45;cursor:not-allowed;box-shadow:none}
+.pill{display:inline-flex;align-items:center;gap:5px;font:700 11.5px var(--body);padding:5px 9px;border-radius:99px}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.wait{background:var(--warn-soft);color:var(--warn)}
+.pill.no{background:#FDE3E7;color:var(--bad)}
+.pill.ind{background:var(--lilac);color:var(--indigo)}
+.stars{display:inline-flex;gap:2px;vertical-align:middle}
+.starbtn{border:0;background:none;padding:2px;cursor:pointer;transition:transform .12s}
+.starbtn:hover{transform:scale(1.15)}
+.avatar{border-radius:50%;background:var(--indigo);color:#fff;display:grid;place-items:center;font-family:var(--display);font-weight:800;flex:0 0 auto;overflow:hidden;background-size:cover;background-position:center}
+.list{display:flex;flex-direction:column;gap:10px}
+.li{background:var(--paper);border-radius:18px;padding:14px;display:flex;gap:12px;align-items:center}
+.li .grow{flex:1;min-width:0}
+.li b{display:block;font-size:15px}
+.li .sub{font-size:13px;color:var(--muted);margin-top:2px}
+.datebox{width:48px;height:52px;border-radius:14px;background:var(--lilac);color:var(--indigo);display:flex;flex-direction:column;align-items:center;justify-content:center;flex:0 0 auto}
+.datebox b{font:800 19px var(--display);line-height:1}
+.datebox span{font:700 10px var(--body);text-transform:uppercase}
+.datebox.past{background:#EFEDF5;color:var(--muted)}
+.stat{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat div{background:var(--paper);border-radius:18px;padding:12px}
+.stat b{font:800 26px var(--display);display:block;color:var(--indigo);font-variant-numeric:tabular-nums}
+.stat span{font-size:12px;color:var(--muted)}
+
+/* Forms */
+.field{display:flex;flex-direction:column;gap:6px;margin-bottom:14px}
+.field label{font:700 13px var(--body)}
+.field .hint{font-size:12px;color:var(--muted)}
+.field .err{font-size:12.5px;color:var(--bad);font-weight:600}
+input[type=text],input[type=number],input[type=date],select,textarea{font:500 16px var(--body);color:var(--ink);background:var(--paper);border:1.5px solid var(--line);border-radius:14px;padding:12px 13px;width:100%;box-sizing:border-box}
+input:focus,select:focus,textarea:focus{border-color:var(--indigo);outline:none}
+textarea{min-height:96px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.drop{border:2px dashed #C9C1F5;border-radius:16px;padding:14px;display:flex;align-items:center;gap:12px;cursor:pointer;background:var(--paper)}
+.drop.done{border-style:solid;border-color:var(--ok);background:var(--ok-soft)}
+.drop input{display:none}
+.seg{display:flex;background:var(--lilac);border-radius:14px;padding:4px;gap:4px}
+.seg button{flex:1;border:0;background:none;border-radius:11px;padding:9px 4px;font:700 13px var(--body);color:var(--indigo);cursor:pointer}
+.seg button.on{background:var(--indigo);color:#fff}
+.secure{display:flex;gap:10px;background:var(--lilac);border-radius:16px;padding:12px;font-size:12.5px;color:var(--indigo-ink);line-height:1.45;margin-bottom:16px}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:14px;margin:4px 0 16px;cursor:pointer}
+.check input{width:20px;height:20px;accent-color:var(--pink);margin:0}
+
+/* Sheet */
+.scrim{position:absolute;inset:0;background:rgba(19,0,107,.45);z-index:20;animation:fade .2s}
+.sheet{position:absolute;left:0;right:0;bottom:0;max-height:92%;background:var(--ground);border-radius:30px 30px 0 0;z-index:21;display:flex;flex-direction:column;animation:up .28s cubic-bezier(.2,.9,.3,1)}
+.sheet.full{top:0;max-height:none;border-radius:0}
+.sheet .sh{display:flex;align-items:center;gap:10px;padding:16px 18px 8px}
+.sheet .sh b{font-family:var(--display);font-size:19px;flex:1}
+.sheet .sb{overflow-y:auto;padding:6px 18px 22px;flex:1}
+.sheet .sf{padding:12px 18px calc(16px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--ground);display:flex;gap:10px}
+.grab{width:40px;height:5px;border-radius:3px;background:#CFC9EA;margin:8px auto 0}
+@keyframes up{from{transform:translateY(100%)}to{transform:none}}
+@keyframes fade{from{opacity:0}}
+
+/* Detail hero */
+.hero{border-radius:28px;padding:20px;margin-bottom:14px}
+.hero h2{font-family:var(--display);font-weight:800;font-size:28px;line-height:1.02;margin:14px 0 6px;text-wrap:balance}
+.hero .big{display:flex;gap:8px;margin-top:16px}
+.hero .big div{flex:1;background:rgba(255,255,255,.6);border-radius:16px;padding:10px}
+.hero .big b{font:800 20px var(--display);display:block}
+.hero .big span{font-size:11.5px;font-weight:600;opacity:.75}
+.desc{line-height:1.6;margin:0 0 6px}
+
+/* Calendar */
+.cal{background:var(--paper);border-radius:24px;padding:14px}
+.cal .mh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.cal .mh b{font:800 18px var(--display);text-transform:capitalize}
+.cal .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;text-align:center}
+.cal .dow{font:700 11px var(--body);color:var(--muted);padding:4px 0}
+.cal .c{aspect-ratio:1;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font:600 14px var(--body);position:relative;border:0;background:none;cursor:pointer;max-width:100%}
+.cal .c.o{opacity:.25}
+.cal .c.t{outline:2px solid var(--indigo);outline-offset:-2px}
+.cal .c.up{background:var(--pink);color:#fff}
+.cal .c.pa{background:#E7E3F5;color:var(--muted)}
+.cal .c.me::after{content:"";position:absolute;bottom:5px;width:5px;height:5px;border-radius:50%;background:var(--indigo)}
+.cal .c.up.me::after{background:#fff}
+.cal .c.sel{box-shadow:0 0 0 2px var(--ink)}
+.legend{display:flex;gap:14px;font-size:12px;color:var(--muted);margin-top:10px;flex-wrap:wrap}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* Welcome */
+.welcome{flex:1;display:flex;flex-direction:column;background:var(--indigo);color:#fff;padding:36px 24px 28px;position:relative;overflow:hidden}
+.welcome .blob{position:absolute;right:-60px;top:70px;width:300px;opacity:.95}
+.welcome h1{font-family:var(--display);font-weight:800;font-size:46px;line-height:.95;letter-spacing:-.03em;margin:auto 0 14px;position:relative;text-wrap:balance}
+.welcome h1 em{font-style:normal;color:var(--pink)}
+.welcome p{color:#D3CCFF;line-height:1.5;margin:0 0 24px;position:relative}
+.welcome .choice{display:flex;flex-direction:column;gap:10px;position:relative}
+.welcome .choice button{border:0;border-radius:22px;padding:18px;text-align:left;cursor:pointer;display:flex;align-items:center;gap:14px}
+.welcome .choice button b{font:800 18px var(--display);display:block}
+.welcome .choice button span{font-size:13px;opacity:.75}
+.welcome .c1{background:var(--pink);color:#fff}
+.welcome .c2{background:#fff;color:var(--indigo)}
+
+/* Profile */
+.pcard{background:var(--indigo);color:#fff;border-radius:28px;padding:20px;position:relative;overflow:hidden}
+.pcard::after{content:"";position:absolute;width:140px;height:140px;border-radius:50%;background:var(--pink);right:-40px;bottom:-60px}
+.pcard .top{display:flex;gap:14px;align-items:center;position:relative;z-index:1}
+.pcard h2{font:800 24px var(--display);margin:0;line-height:1.05}
+.pcard .photo{position:relative;cursor:pointer}
+.pcard .photo .edit{position:absolute;right:-2px;bottom:-2px;width:26px;height:26px;border-radius:50%;background:var(--pink);display:grid;place-items:center;border:3px solid var(--indigo)}
+.pcard .kpis{display:flex;gap:8px;margin-top:16px;position:relative;z-index:1}
+.pcard .kpis div{flex:1;background:rgba(255,255,255,.12);border-radius:14px;padding:10px}
+.pcard .kpis b{font:800 20px var(--display);display:block}
+.pcard .kpis span{font-size:11.5px;color:#CFC8FF}
+.progress{height:8px;border-radius:4px;background:var(--lilac);overflow:hidden;margin:8px 0 4px}
+.progress i{display:block;height:100%;background:linear-gradient(90deg,var(--indigo),var(--pink));border-radius:4px;transition:width .4s}
+.review{background:var(--paper);border-radius:18px;padding:14px}
+.review p{margin:6px 0 0;line-height:1.5;font-size:14px}
+
+.toast{position:absolute;left:18px;right:18px;bottom:96px;background:var(--ink);color:#fff;border-radius:16px;padding:14px 16px;font-weight:600;z-index:40;display:flex;gap:10px;align-items:center;animation:up .25s}
+.success{text-align:center;padding:30px 10px}
+.success .ring{width:96px;height:96px;border-radius:50%;background:var(--pink);display:grid;place-items:center;margin:0 auto 16px}
+.success h3{font:800 26px var(--display);margin:0 0 8px}
+
+/* Mode app installée */
+*{box-sizing:border-box}
+html,body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+button{-webkit-user-select:none;user-select:none;touch-action:manipulation}
+img{max-width:100%}
+[hidden]{display:none!important}
+.hd{padding-top:calc(18px + env(safe-area-inset-top,0px))}
+.welcome{padding-top:calc(36px + env(safe-area-inset-top,0px))}
+.sheet.full .sh{padding-top:calc(16px + env(safe-area-inset-top,0px))}
+@media (max-width:500px){html,body{overflow:hidden}}
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="aside">
+    <svg width="64" height="64" viewBox="0 0 110 110" aria-hidden="true"><path d="M33 13C48 9 56 30 62 45c9 1 31-1 35 19 4 22-20 36-41 34C30 96 12 80 12 56 12 36 18 17 33 13Z" fill="#fff"/><circle cx="72" cy="24" r="11" fill="#FF3DB4"/></svg>
+    <h1>Any Time To Work</h1>
+    <p>Prototype interactif : missions courtes (4 jours maximum) dans le tertiaire et l'événementiel.</p>
+    <p>Passez d'une interface à l'autre pour tester les deux côtés. Une candidature envoyée côté candidat apparaît chez le pro.</p>
+    <div class="roles" id="roleSwitch"></div>
+    <p style="margin-top:20px;font-size:12.5px;color:#9F95E6">Données d'exemple. Rien n'est envoyé ni enregistré : tout s'efface en rechargeant la page.</p>
+  </div>
+  <div class="phone" id="app"></div>
+</div>
+
+<script>
+// ---------- Helpers ----------
+const TODAY = new Date(); TODAY.setHours(0,0,0,0);
+const addD = (n, base = TODAY) => { const d = new Date(base); d.setDate(d.getDate() + n); return d; };
+const iso = d => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const off = n => iso(addD(n));
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y, m-1, d); };
+const DOW = ['dim','lun','mar','mer','jeu','ven','sam'];
+const MON = ['janv','févr','mars','avr','mai','juin','juil','août','sept','oct','nov','déc'];
+const dShort = s => { const d = parse(s); return `${DOW[d.getDay()]} ${d.getDate()} ${MON[d.getMonth()]}`; };
+const dRange = arr => arr.length === 1 ? dShort(arr[0]) : `${parse(arr[0]).getDate()} → ${dShort(arr[arr.length-1])}`;
+const euro = n => n.toFixed(2).replace('.', ',') + ' €';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const initials = (a, b) => ((a||'?')[0] + (b||'')[0]||'').toUpperCase();
+const hoursOf = h => { const m = h.match(/(\d+)h(\d*)\s*–\s*(\d+)h(\d*)/); if (!m) return 0; let s = +m[1] + (+m[2]||0)/60, e = +m[3] + (+m[4]||0)/60; if (e <= s) e += 24; return e - s; };
+const isPast = s => parse(s) < TODAY;
+
+const I = {
+  cal: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E00A8" stroke-width="2.2" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M8 3v4M16 3v4M3 10h18"/></svg>',
+  home: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B6690" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7v9a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1z"/></svg>',
+  bag: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B6690" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="7" width="18" height="13" rx="3"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>',
+  user: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B6690" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4.5-6 8-6s7 2 8 6"/></svg>',
+  plus: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  people: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#6B6690" stroke-width="2.2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.5-5 6.5-5s5.7 1.5 6.5 5"/><circle cx="17" cy="9" r="2.5"/><path d="M17 14c2.3 0 4 1.2 4.5 4"/></svg>',
+  close: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16123A" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  back: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16123A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>',
+  pin: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 22s7-7.2 7-13a7 7 0 0 0-14 0c0 5.8 7 13 7 13z"/><circle cx="12" cy="9" r="2.5"/></svg>',
+  clock: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+  day: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18"/></svg>',
+  file: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E00A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
+  check: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0F9D6B" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
+  bigcheck: '<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>',
+  lock: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1E00A8" stroke-width="2.2" stroke-linecap="round" style="flex:0 0 auto"><rect x="4" y="11" width="16" height="10" rx="3"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>',
+  cam: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  edit: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E00A8" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>',
+};
+const LOGO = (s=30, blob='#1E00A8') => `<svg width="${s}" height="${s}" viewBox="0 0 110 110" aria-hidden="true"><path d="M33 13C48 9 56 30 62 45c9 1 31-1 35 19 4 22-20 36-41 34C30 96 12 80 12 56 12 36 18 17 33 13Z" fill="${blob}"/><circle cx="72" cy="24" r="11" fill="#FF3DB4"/></svg>`;
+const star = (fill, size=16) => `<svg width="${size}" height="${size}" viewBox="0 0 24 24"><path d="M12 2.8l2.8 5.8 6.3.9-4.6 4.4 1.1 6.3L12 17.2l-5.6 3 1.1-6.3L2.9 9.5l6.3-.9z" fill="${fill}" stroke="${fill === 'none' ? '#C9C1F5' : fill}" stroke-width="1.6" stroke-linejoin="round"/></svg>`;
+const stars = (v, size=15, color='#FF3DB4') => `<span class="stars" aria-label="${v} sur 5">${[1,2,3,4,5].map(i => star(i <= Math.round(v) ? color : 'none', size)).join('')}</span>`;
+const avatar = (p, size=44) => p.photo
+  ? `<div class="avatar" style="width:${size}px;height:${size}px;background-image:url('${p.photo}')"></div>`
+  : `<div class="avatar" style="width:${size}px;height:${size}px;font-size:${size*.38}px;background:${p.color||'#1E00A8'}">${esc(initials(p.first, p.last))}</div>`;
+
+// ---------- Données d'exemple ----------
+const SECTORS = {
+  event:   {name:'Événementiel', cls:'s-event'},
+  accueil: {name:'Accueil', cls:'s-accueil'},
+  admin:   {name:'Administratif', cls:'s-admin'},
+  resto:   {name:'Restauration', cls:'s-resto'},
+  commerce:{name:'Commerce', cls:'s-commerce'},
+};
+const span = (start, n) => Array.from({length:n}, (_, i) => off(start + i));
+let nextId = 100;
+const M = [
+  {id:1, title:"Hôte·sse d'accueil salon professionnel", company:'Agence Nova Events', mine:true, sector:'accueil', city:'Paris 15e', address:'Parc des expositions, Paris 15e', rate:14, dates:span(2,3), hours:'8h–18h', spots:4, desc:"Accueil des visiteurs, remise des badges et orientation sur un salon de l'habitat. Tenue fournie. Bonne présentation et anglais apprécié.", proRating:4.7},
+  {id:2, title:'Serveur·se cocktail dînatoire', company:'Traiteur Les Canuts', sector:'resto', city:'Lyon 2e', address:'Quai Rambaud, Lyon 2e', rate:15.5, dates:span(1,1), hours:'18h–00h', spots:6, desc:"Service au plateau pour un cocktail de 250 invités. Expérience en service souhaitée. Chemise blanche et pantalon noir.", proRating:4.5},
+  {id:3, title:'Assistant·e administratif·ve', company:'Cabinet Vauban Conseil', sector:'admin', city:'Paris 9e', address:'Rue La Fayette, Paris 9e', rate:13.5, dates:span(5,4), hours:'9h–17h', spots:1, desc:"Renfort pendant un pic d'activité : classement, saisie de factures, accueil téléphonique. Maîtrise d'Excel demandée.", proRating:4.8},
+  {id:4, title:'Standardiste', company:'Groupe Atlantique Immo', sector:'accueil', city:'Bordeaux', address:'Cours de l\'Intendance, Bordeaux', rate:13, dates:span(2,1), hours:'9h–18h', spots:1, desc:"Remplacement de la standardiste : prise d'appels, transfert, gestion du courrier.", proRating:4.2},
+  {id:5, title:'Vestiaire soirée de gala', company:'Agence Nova Events', mine:true, sector:'event', city:'Paris 8e', address:'Avenue Montaigne, Paris 8e', rate:14.5, dates:span(6,1), hours:'19h–2h', spots:3, desc:"Gestion du vestiaire pour 400 invités. Rigueur et sourire indispensables. Repas fourni.", proRating:4.7},
+  {id:6, title:'Inventaire en magasin', company:'Maison Delcourt', sector:'commerce', city:'Lille', address:'Rue Neuve, Lille', rate:12.8, dates:span(3,2), hours:'6h–13h', spots:5, desc:"Comptage et étiquetage pour l'inventaire annuel d'une boutique de prêt-à-porter.", proRating:4.1},
+  {id:7, title:'Runner festival', company:'Collectif Estuaire', sector:'event', city:'Nantes', address:'Île de Nantes', rate:13.2, dates:span(9,3), hours:'12h–20h', spots:8, desc:"Logistique artistes et backstage : transport de matériel, ravitaillement, accueil des équipes.", proRating:4.6},
+  {id:8, title:'Accueil congrès médical', company:'Méditerranée Congrès', sector:'event', city:'Marseille', address:'Parc Chanot, Marseille', rate:15, dates:span(12,2), hours:'7h30–17h', spots:5, desc:"Émargement, distribution des sacoches, gestion des salles de conférence.", proRating:4.9},
+  {id:9, title:'Saisie de données clients', company:'Assurances Garonne', sector:'admin', city:'Toulouse', address:'Allées Jean Jaurès, Toulouse', rate:13.8, dates:span(1,2), hours:'9h–17h', spots:2, desc:"Mise à jour d'une base clients à partir de dossiers papier. Rapidité de frappe appréciée.", proRating:4.4},
+  {id:10, title:'Barman·aid séminaire', company:'Hôtel du Lac Bleu', sector:'resto', city:'Annecy', address:'Avenue d\'Albigny, Annecy', rate:16, dates:span(7,1), hours:'17h–23h', spots:2, desc:"Bar à cocktails pour un séminaire d'entreprise de 80 personnes. Expérience bar exigée.", proRating:4.8},
+  // missions passées
+  {id:11, title:'Hôtesse soirée de lancement', company:'Studio Paname', sector:'event', city:'Paris 3e', address:'Rue de Turenne, Paris 3e', rate:14, dates:span(-9,1), hours:'18h–23h', spots:2, desc:"Accueil et vestiaire pour un lancement produit.", proRating:4.6},
+  {id:12, title:'Accueil séminaire', company:'Agence Nova Events', mine:true, sector:'accueil', city:'Paris 17e', address:'Porte Maillot, Paris 17e', rate:14, dates:span(-4,2), hours:'8h–17h', spots:2, desc:"Accueil et émargement des participants d'un séminaire.", proRating:4.7},
+];
+
+const PEOPLE = {
+  me:  {id:'me', first:'Léa', last:'Martin', color:'#1E00A8', city:'Paris', rating:4.8, count:12},
+  yb:  {id:'yb', first:'Yanis', last:'Benali', color:'#7A2BD9', city:'Paris 11e', rating:4.9, count:23, motivation:"Trois ans d'hôtellerie, je parle anglais et espagnol."},
+  cr:  {id:'cr', first:'Chloé', last:'Roux', color:'#D92B8F', city:'Boulogne', rating:4.6, count:8, motivation:"Étudiante en école de commerce, disponible les week-ends et en semaine."},
+  md:  {id:'md', first:'Mamadou', last:'Diallo', color:'#0B7A8F', city:'Saint-Denis', rating:5, count:31, motivation:"Habitué des salons : accueil, badges, logistique. Ponctuel et souriant."},
+  sa:  {id:'sa', first:'Sarah', last:'Azoulay', color:'#C25B00', city:'Paris 15e', rating:4.4, count:5, motivation:"Je cherche des missions courtes à côté de mon master."},
+};
+
+const S = {
+  role: null, tab: 'home', sheet: null, stack: [], toast: null,
+  sector: 'all', city: 'all', minRate: 0, maxLen: 4,
+  dispo: new Set(), dispoOnly: true,
+  calMonth: new Date(TODAY.getFullYear(), TODAY.getMonth(), 1), calSel: null,
+  me: {first:'Léa', last:'Martin', photo:null, city:'Paris', phone:'', cv:null, motivation:"Souriante et organisée, j'ai déjà travaillé sur plusieurs salons et soirées. Disponible rapidement, à l'aise avec le public.", rating:4.8, reviews:[
+    {from:'Studio Paname', v:5, text:'Très professionnelle, ponctuelle et souriante. On la reprend dès que possible.'},
+    {from:'Traiteur Les Canuts', v:5, text:'Excellent service, très bonne présentation.'},
+    {from:'Méditerranée Congrès', v:4, text:'Efficace sur l\'émargement, bonne gestion du rush du matin.'},
+  ]},
+  admin: {saved:false, idFile:null, nss:'', iban:'', holder:''},
+  apps: {11:'done', 12:'done', 2:'accepted'},  // mission -> pending | accepted | refused | done
+  ratedPro: {11:5},                              // missions dont j'ai noté le pro
+  personal: [{id:'p1', title:'Baby-sitting famille Moreau', date:off(4), hours:'17h–20h', place:'Paris 14e'}],
+  pro: {company:'Agence Nova Events', logo:null, sector:'Événementiel', city:'Paris 10e', about:"Agence événementielle : salons, galas et séminaires en Île-de-France depuis 2014.", rating:4.7, reviews:[
+    {from:'Léa M.', v:5, text:'Brief clair, équipe accueillante, paiement rapide.'},
+    {from:'Mamadou D.', v:5, text:'Toujours un plaisir de travailler avec Nova.'},
+    {from:'Chloé R.', v:4, text:'Bonne organisation, pause repas un peu courte.'},
+  ]},
+  cands: { 1:{yb:'pending', cr:'pending', md:'accepted'}, 5:{sa:'pending', yb:'pending'}, 12:{me:'accepted', md:'accepted'} },
+  ratedWorker: {'12:md':5},
+  draft: null,
+};
+
+// ---------- Rendu ----------
+const app = document.getElementById('app');
+const missionById = id => M.find(m => m.id === +id);
+
+function render(keepScroll = true){
+  const c = app.querySelector('.content'); const prev = c ? c.scrollTop : 0; const key = S.role + S.tab;
+  let html = !S.role ? welcome() : (S.role === 'cand' ? candShell() : proShell());
+  if (S.sheet) html += `<div class="scrim" data-a="closeSheet"></div>` + sheet();
+  if (S.toast) html += `<div class="toast">${I.check.replace('#0F9D6B','#FF3DB4')}${esc(S.toast)}</div>`;
+  app.innerHTML = html;
+  const n = app.querySelector('.content'); if (n && keepScroll && render.key === key) n.scrollTop = prev;
+  render.key = key;
+  document.getElementById('roleSwitch').innerHTML = [['cand','Interface candidat'],['pro','Interface pro'],[null,'Accueil']].map(([r,l]) => `<button class="${S.role===r?'on':''}" data-a="role" data-v="${r??''}">${l}</button>`).join('');
+}
+function toast(msg){ S.toast = msg; render(); clearTimeout(toast.t); toast.t = setTimeout(() => { S.toast = null; render(); }, 2200); }
+
+function welcome(){
+  return `<div class="welcome">
+    <div style="display:flex;align-items:center;gap:10px;position:relative">${LOGO(36,'#fff')}<b style="font:800 22px var(--display)">ATTW</b></div>
+    <svg class="blob" viewBox="0 0 110 110" aria-hidden="true"><path d="M33 13C48 9 56 30 62 45c9 1 31-1 35 19 4 22-20 36-41 34C30 96 12 80 12 56 12 36 18 17 33 13Z" fill="#2F17C4"/><circle cx="72" cy="24" r="11" fill="#FF3DB4"/></svg>
+    <h1>Bosse quand <em>tu veux.</em></h1>
+    <p>Des missions de 1 à 4 jours dans l'accueil, l'événementiel et le bureau. Tu choisis tes dates, on te montre ce qui colle.</p>
+    <div class="choice">
+      <button class="c1" data-a="role" data-v="cand"><div style="flex:1"><b>Je cherche une mission</b><span>Extras, CDD courts, payés à l'heure</span></div>→</button>
+      <button class="c2" data-a="role" data-v="pro"><div style="flex:1"><b>Je recrute</b><span>Publie une mission en 2 minutes</span></div>→</button>
+    </div>
+  </div>`;
+}
+
+function header(right){
+  return `<div class="hd"><button class="brand" data-a="role" data-v="" aria-label="Retour à l'accueil (changer d'interface)">${LOGO(28)}ATTW</button><div class="sp"></div>${right}</div>`;
+}
+function tabbar(items){
+  return `<nav class="tabbar">${items.map(([k,l,ic,cls]) => `<button class="${S.tab===k?'on':''} ${cls||''}" data-a="tab" data-v="${k}">${ic}${l}</button>`).join('')}</nav>`;
+}
+
+// ===== Candidat =====
+function upcomingForMe(){
+  const own = Object.entries(S.apps).filter(([,s]) => s === 'accepted' || s === 'done').map(([id]) => missionById(id));
+  return own;
+}
+function candShell(){
+  const upcoming = upcomingForMe().filter(m => !isPast(m.dates[m.dates.length-1])).length + S.personal.filter(p => !isPast(p.date)).length;
+  const right = `<button class="icbtn" data-a="openCal" aria-label="Mon calendrier">${I.cal}${upcoming?`<span class="badge">${upcoming}</span>`:''}</button>`;
+  const body = S.tab === 'home' ? candHome() : S.tab === 'apps' ? candApps() : candProfile();
+  return header(right) + `<div class="content">${body}</div>` + tabbar([['home','Missions',I.home],['apps','Candidatures',I.bag],['profile','Profil',I.user]]);
+}
+
+function filteredMissions(){
+  return M.filter(m => !m.dates.some(isPast))
+    .filter(m => S.sector === 'all' || m.sector === S.sector)
+    .filter(m => S.city === 'all' || m.city.startsWith(S.city))
+    .filter(m => m.rate >= S.minRate && m.dates.length <= S.maxLen)
+    .filter(m => !S.dispo.size || !S.dispoOnly || m.dates.every(d => S.dispo.has(d)))
+    .sort((a,b) => a.dates[0].localeCompare(b.dates[0]));
+}
+
+function candHome(){
+  const days = Array.from({length:16}, (_, i) => addD(i));
+  const avail = new Set(M.flatMap(m => m.dates));
+  const list = filteredMissions();
+  const nFilters = (S.city!=='all') + (S.minRate>0) + (S.maxLen<4);
+  return `
+  <div class="h1">Salut ${esc(S.me.first)},<br>tu es dispo <em>quand&nbsp;?</em></div>
+  <div class="dispo">
+    <div class="top"><b>Mes disponibilités</b>${S.dispo.size?`<button data-a="clearDispo">Effacer (${S.dispo.size})</button>`:''}</div>
+    <p>${S.dispo.size ? `On t'affiche les missions qui tiennent dans tes ${S.dispo.size} jour${S.dispo.size>1?'s':''}.` : 'Touche les jours où tu es libre.'}</p>
+    <div class="days">${days.map(d => { const k = iso(d); return `<button class="day ${S.dispo.has(k)?'on':''}" data-a="toggleDay" data-v="${k}" aria-pressed="${S.dispo.has(k)}"><span>${i0(d)}</span><b>${d.getDate()}</b>${avail.has(k)?'<i></i>':'<i style="opacity:0"></i>'}</button>`; }).join('')}</div>
+  </div>
+  <div class="chips">
+    <button class="chip filter" data-a="openFilters">Filtres${nFilters?` · ${nFilters}`:''}</button>
+    ${[['all','Tout'], ...Object.entries(SECTORS).map(([k,v]) => [k,v.name])].map(([k,l]) => `<button class="chip ${S.sector===k?'on':''}" data-a="sector" data-v="${k}">${l}</button>`).join('')}
+  </div>
+  <div class="h2">${list.length} mission${list.length>1?'s':''} <small>${S.dispo.size ? 'compatibles avec tes dispos' : 'à venir'}</small></div>
+  <div class="cards">${list.length ? list.map(missionCard).join('') : `<div class="empty"><b>Rien sur ces dates pour l'instant</b><span class="muted">Ajoute des jours ou retire un filtre. De nouvelles missions arrivent chaque jour.</span><div style="margin-top:14px"><button class="btn ghost small" data-a="clearAll">Tout réinitialiser</button></div></div>`}</div>`;
+}
+function i0(d){ return DOW[d.getDay()] + (iso(d) === iso(TODAY) ? '·auj' : ''); }
+
+function missionCard(m){
+  const sec = SECTORS[m.sector]; const st = S.apps[m.id];
+  const total = hoursOf(m.hours) * m.dates.length * m.rate;
+  return `<button class="card ${sec.cls}" data-a="openMission" data-v="${m.id}">
+    <div class="row"><span class="sector">${sec.name}</span><div class="rate">${euro(m.rate)}<small>brut / heure</small></div></div>
+    <h3>${esc(m.title)}</h3>
+    <div class="co">${esc(m.company)} · ${stars(m.proRating,12,'currentColor')} ${m.proRating.toFixed(1)}</div>
+    <div class="meta"><span>${I.day}${dRange(m.dates)}</span><span>${I.clock}${m.hours}</span><span>${I.pin}${esc(m.city)}</span></div>
+    <div class="meta" style="margin-top:6px"><span>≈ ${euro(total).replace(',00','')} au total</span>${st?`<span>${statusLabel(st)}</span>`:''}</div>
+  </button>`;
+}
+const statusLabel = s => ({pending:'Candidature envoyée', accepted:'Acceptée', refused:'Non retenue', done:'Terminée'})[s];
+const statusPill = s => `<span class="pill ${({pending:'wait',accepted:'ok',refused:'no',done:'ind'})[s]}">${statusLabel(s)}</span>`;
+
+function candApps(){
+  const entries = Object.entries(S.apps).map(([id,s]) => ({m:missionById(id), s}));
+  const cur = entries.filter(e => e.s !== 'done' && !isPast(e.m.dates.at(-1)));
+  const past = entries.filter(e => e.s === 'done' || isPast(e.m.dates.at(-1)));
+  const row = ({m,s}) => `<button class="li" style="border:0;text-align:left;width:100%;cursor:pointer" data-a="openMission" data-v="${m.id}">
+      <div class="datebox ${isPast(m.dates.at(-1))?'past':''}"><b>${parse(m.dates[0]).getDate()}</b><span>${MON[parse(m.dates[0]).getMonth()]}</span></div>
+      <div class="grow"><b>${esc(m.title)}</b><div class="sub">${esc(m.company)} · ${m.hours}</div><div style="margin-top:6px">${statusPill(s)}</div></div></button>`;
+  return `<div class="h1">Mes <em>candidatures</em></div>
+    <div class="h2">En cours <small>${cur.length}</small></div>
+    <div class="list">${cur.length ? cur.map(row).join('') : `<div class="empty"><b>Aucune candidature en cours</b><span class="muted">Choisis une mission et postule en un geste.</span></div>`}</div>
+    <div class="h2">Missions réalisées <small>${past.length}</small></div>
+    <div class="list">${past.map(e => row(e) + (S.ratedPro[e.m.id] ? '' : `<button class="btn ghost small" style="margin:-4px 0 4px auto" data-a="rate" data-target="pro" data-v="${e.m.id}">Noter ${esc(e.m.company)}</button>`)).join('')}</div>`;
+}
+
+function profileCompletion(){
+  const steps = [!!S.me.photo, !!(S.me.first && S.me.last), !!S.me.cv, S.me.motivation.trim().length > 20];
+  return {done: steps.filter(Boolean).length, total: steps.length};
+}
+function candProfile(){
+  const me = S.me; const pc = profileCompletion(); const a = S.admin;
+  return `
+  <div class="pcard">
+    <div class="top">
+      <label class="photo" for="photoIn" title="Changer la photo">${avatar({...me, color:'#2F17C4'}, 72)}<span class="edit">${I.cam}</span></label>
+      <input type="file" id="photoIn" accept="image/*" hidden>
+      <div><h2>${esc(me.first)} ${esc(me.last)}</h2><div style="color:#CFC8FF;font-size:13.5px;margin-top:4px">${esc(me.city)}</div><div style="margin-top:6px">${stars(me.rating,15)} <b>${me.rating.toFixed(1)}</b></div></div>
+    </div>
+    <div class="kpis"><div><b>${Object.values(S.apps).filter(s=>s==='done').length + 10}</b><span>missions</span></div><div><b>${me.reviews.length + 9}</b><span>avis</span></div><div><b>100%</b><span>présence</span></div></div>
+  </div>
+  <div class="panel" style="margin-top:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center"><b>Profil complété</b><span class="lbl">${pc.done}/${pc.total}</span></div>
+    <div class="progress"><i style="width:${pc.done/pc.total*100}%"></i></div>
+    <span class="muted" style="font-size:13px">${pc.done === pc.total ? 'Ton profil est prêt : les recruteurs voient tout.' : 'Ajoute ' + [!me.photo&&'une photo', !me.cv&&'ton CV'].filter(Boolean).join(' et ') + ' pour postuler.'}</span>
+  </div>
+  <div class="h2">Mes infos</div>
+  <div class="two"><div class="field"><label for="f_first">Prénom</label><input type="text" id="f_first" value="${esc(me.first)}" data-bind="me.first"></div>
+  <div class="field"><label for="f_last">Nom</label><input type="text" id="f_last" value="${esc(me.last)}" data-bind="me.last"></div></div>
+  <div class="field"><label for="f_city">Ville</label><input type="text" id="f_city" value="${esc(me.city)}" data-bind="me.city"></div>
+  <div class="field"><label>CV</label>
+    <label class="drop ${me.cv?'done':''}" for="cvIn">${me.cv?I.check:I.file}<div style="flex:1;min-width:0"><b style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${me.cv?esc(me.cv):'Importer mon CV'}</b><span class="muted" style="font-size:12.5px">${me.cv?'Touche pour remplacer':'PDF, Word ou photo'}</span></div></label>
+    <input type="file" id="cvIn" accept=".pdf,.doc,.docx,image/*" hidden></div>
+  <div class="field"><label for="f_motiv">Message de motivation</label><textarea id="f_motiv" data-bind="me.motivation">${esc(me.motivation)}</textarea><span class="hint">Il accompagne chacune de tes candidatures.</span></div>
+  <button class="btn ind block" data-a="saveProfile">Enregistrer</button>
+
+  <div class="h2">Dossier administratif</div>
+  <div class="panel">
+    ${[['Pièce d\'identité', a.idFile], ['N° de sécurité sociale', a.nss && maskNss(a.nss)], ['RIB', a.iban && maskIban(a.iban)]].map(([l,v]) => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line);gap:10px"><span>${l}</span>${v?`<b style="font-size:13.5px">${esc(v)}</b>`:`<span class="pill wait">À fournir</span>`}</div>`).join('')}
+    <p class="muted" style="font-size:12.5px;margin:10px 0 12px">Demandé seulement à ta première candidature, puis réutilisé si tu l'enregistres.</p>
+    <button class="btn ghost block small" data-a="openAdmin">${a.saved ? 'Modifier mon dossier' : 'Compléter mon dossier'}</button>
+  </div>
+
+  <div class="h2">Avis des recruteurs <small>${me.reviews.length}</small></div>
+  <div class="list">${me.reviews.map(r => `<div class="review"><div style="display:flex;justify-content:space-between"><b>${esc(r.from)}</b>${stars(r.v,13)}</div><p>${esc(r.text)}</p></div>`).join('')}</div>
+  <div style="height:8px"></div>`;
+}
+const maskNss = s => s.replace(/\s/g,'').replace(/^(\d)\d{10}(\d{4})$/, '$1 •• •• •• ••• $2');
+const maskIban = s => { const c = s.replace(/\s/g,''); return c.slice(0,4) + ' •••• •••• ' + c.slice(-4); };
+
+// ===== Pro =====
+function proShell(){
+  const pending = Object.values(S.cands).flatMap(o => Object.values(o)).filter(s => s==='pending').length;
+  const right = `<button class="icbtn" data-a="openCal" aria-label="Planning">${I.cal}</button><button class="icbtn" data-a="tab" data-v="cands" aria-label="Candidatures">${I.people}${pending?`<span class="badge">${pending}</span>`:''}</button>`;
+  const body = S.tab === 'home' ? proHome() : S.tab === 'publish' ? proPublish() : S.tab === 'cands' ? proCands() : proProfile();
+  return header(right) + `<div class="content">${body}</div>` + tabbar([['home','Missions',I.home],['publish','Publier',I.plus,'pub'],['cands','Candidats',I.people],['profile','Profil',I.user]]);
+}
+const myMissions = () => M.filter(m => m.mine);
+function proHome(){
+  const mm = myMissions(); const live = mm.filter(m => !isPast(m.dates.at(-1))); const past = mm.filter(m => isPast(m.dates.at(-1)));
+  const pending = Object.values(S.cands).flatMap(o => Object.values(o)).filter(s => s==='pending').length;
+  const row = m => { const c = S.cands[m.id] || {}; const n = Object.keys(c).length; const acc = Object.values(c).filter(s => s==='accepted').length;
+    return `<button class="card ${SECTORS[m.sector].cls}" data-a="openProMission" data-v="${m.id}">
+      <div class="row"><span class="sector">${SECTORS[m.sector].name}</span><div class="rate" style="font-size:24px">${euro(m.rate)}<small>/ heure</small></div></div>
+      <h3 style="font-size:20px">${esc(m.title)}</h3>
+      <div class="meta"><span>${I.day}${dRange(m.dates)}</span><span>${I.clock}${m.hours}</span></div>
+      <div class="meta" style="margin-top:6px"><span>${n} candidat${n>1?'s':''}</span><span>${acc}/${m.spots} poste${m.spots>1?'s':''} pourvu${acc>1?'s':''}</span></div></button>`; };
+  return `<div class="h1">${esc(S.pro.company)}</div>
+    <div class="stat"><div><b>${live.length}</b><span>missions en ligne</span></div><div><b>${pending}</b><span>à traiter</span></div><div><b>${S.pro.rating.toFixed(1)}</b><span>note moyenne</span></div></div>
+    <button class="btn pri block" style="margin-top:14px" data-a="tab" data-v="publish">${I.plus} Publier une mission</button>
+    <div class="h2">En ligne <small>${live.length}</small></div>
+    <div class="cards" style="margin-top:0">${live.map(row).join('') || '<div class="empty"><b>Aucune mission en ligne</b></div>'}</div>
+    <div class="h2">Terminées <small>${past.length}</small></div>
+    <div class="cards" style="margin-top:0">${past.map(row).join('')}</div>`;
+}
+
+function proPublish(){
+  const d = S.draft ||= {title:'', sector:'event', city:'', address:'', rate:'', start:off(3), len:1, hours:'', spots:1, desc:'', err:{}};
+  const e = d.err;
+  return `<div class="h1">Nouvelle <em>mission</em></div>
+  <div class="field"><label for="p_title">Intitulé du poste</label><input type="text" id="p_title" placeholder="Ex. Hôte·sse d'accueil" value="${esc(d.title)}" data-bind="draft.title">${e.title?`<span class="err">${e.title}</span>`:''}</div>
+  <div class="field"><label for="p_sector">Secteur</label><select id="p_sector" data-bind="draft.sector">${Object.entries(SECTORS).map(([k,v]) => `<option value="${k}" ${d.sector===k?'selected':''}>${v.name}</option>`).join('')}</select></div>
+  <div class="two"><div class="field"><label for="p_city">Ville</label><input type="text" id="p_city" placeholder="Paris 8e" value="${esc(d.city)}" data-bind="draft.city">${e.city?`<span class="err">${e.city}</span>`:''}</div>
+  <div class="field"><label for="p_rate">Taux horaire brut (€)</label><input type="number" id="p_rate" min="11.88" step="0.1" placeholder="14" value="${esc(d.rate)}" data-bind="draft.rate">${e.rate?`<span class="err">${e.rate}</span>`:''}</div></div>
+  <div class="field"><label for="p_addr">Adresse précise</label><input type="text" id="p_addr" placeholder="Visible par les candidats retenus" value="${esc(d.address)}" data-bind="draft.address"></div>
+  <div class="field"><label for="p_start">Premier jour</label><input type="date" id="p_start" min="${off(0)}" value="${d.start}" data-bind="draft.start"></div>
+  <div class="field"><label>Durée</label><div class="seg">${[1,2,3,4].map(n => `<button class="${d.len===n?'on':''}" data-a="draftLen" data-v="${n}">${n} jour${n>1?'s':''}</button>`).join('')}</div><span class="hint">Les missions durent 4 jours maximum.</span></div>
+  <div class="two"><div class="field"><label for="p_hours">Horaires</label><input type="text" id="p_hours" placeholder="9h–17h" value="${esc(d.hours)}" data-bind="draft.hours">${e.hours?`<span class="err">${e.hours}</span>`:''}</div>
+  <div class="field"><label for="p_spots">Postes</label><input type="number" id="p_spots" min="1" max="50" value="${d.spots}" data-bind="draft.spots"></div></div>
+  <div class="field"><label for="p_desc">Descriptif de la mission</label><textarea id="p_desc" placeholder="Tâches, tenue, profil recherché…" data-bind="draft.desc">${esc(d.desc)}</textarea>${e.desc?`<span class="err">${e.desc}</span>`:''}</div>
+  <button class="btn pri block" data-a="publish">Publier la mission</button>
+  <button class="btn ghost block" style="margin-top:8px" data-a="fillDraft">Remplir avec un exemple</button>`;
+}
+
+function proCands(){
+  const blocks = myMissions().filter(m => !isPast(m.dates.at(-1))).map(m => {
+    const c = Object.entries(S.cands[m.id] || {});
+    return `<div class="h2">${esc(m.title)} <small>${dRange(m.dates)}</small></div>
+    <div class="list">${c.length ? c.map(([pid, s]) => candRow(m, pid, s)).join('') : '<div class="empty"><b>Pas encore de candidat</b><span class="muted">Les candidatures arrivent ici en temps réel.</span></div>'}</div>`;
+  }).join('');
+  return `<div class="h1">Les <em>candidats</em></div>${blocks}`;
+}
+function personOf(pid){ return pid === 'me' ? {...PEOPLE.me, photo:S.me.photo, first:S.me.first, last:S.me.last, motivation:S.me.motivation, cv:S.me.cv} : PEOPLE[pid]; }
+function candRow(m, pid, s){
+  const p = personOf(pid);
+  return `<div class="li"><button style="border:0;background:none;padding:0;cursor:pointer;display:flex;gap:12px;align-items:center;flex:1;min-width:0;text-align:left" data-a="openPerson" data-v="${pid}" data-m="${m.id}">
+    ${avatar(p, 46)}<div class="grow"><b>${esc(p.first)} ${esc(p.last[0])}.</b><div class="sub">${stars(p.rating,12)} ${p.rating.toFixed(1)} · ${p.count} missions</div></div></button>
+    ${s==='pending' ? `<div style="display:flex;gap:6px"><button class="btn small ghost" data-a="decide" data-v="refused" data-m="${m.id}" data-p="${pid}" aria-label="Refuser">Non</button><button class="btn small pri" data-a="decide" data-v="accepted" data-m="${m.id}" data-p="${pid}">Oui</button></div>` : statusPill(s)}</div>`;
+}
+
+function proProfile(){
+  const p = S.pro;
+  return `<div class="pcard"><div class="top">
+    <label class="photo" for="logoIn" title="Changer le logo">${p.logo ? `<div class="avatar" style="width:72px;height:72px;border-radius:22px;background-image:url('${p.logo}')"></div>` : `<div class="avatar" style="width:72px;height:72px;border-radius:22px;background:#fff">${LOGO(44)}</div>`}<span class="edit">${I.cam}</span></label>
+    <input type="file" id="logoIn" accept="image/*" hidden>
+    <div><h2>${esc(p.company)}</h2><div style="color:#CFC8FF;font-size:13.5px;margin-top:4px">${esc(p.sector)} · ${esc(p.city)}</div><div style="margin-top:6px">${stars(p.rating,15)} <b>${p.rating.toFixed(1)}</b></div></div></div>
+    <div class="kpis"><div><b>${myMissions().length + 37}</b><span>missions publiées</span></div><div><b>96%</b><span>paiement à J+7</span></div><div><b>${p.reviews.length + 21}</b><span>avis</span></div></div></div>
+  <div class="h2">Infos de l'entreprise</div>
+  <div class="field"><label for="pr_co">Nom</label><input type="text" id="pr_co" value="${esc(p.company)}" data-bind="pro.company"></div>
+  <div class="two"><div class="field"><label for="pr_sec">Secteur</label><input type="text" id="pr_sec" value="${esc(p.sector)}" data-bind="pro.sector"></div>
+  <div class="field"><label for="pr_city">Ville</label><input type="text" id="pr_city" value="${esc(p.city)}" data-bind="pro.city"></div></div>
+  <div class="field"><label for="pr_about">Présentation</label><textarea id="pr_about" data-bind="pro.about">${esc(p.about)}</textarea></div>
+  <button class="btn ind block" data-a="saveProfile">Enregistrer</button>
+  <div class="h2">Avis des intervenants <small>${p.reviews.length}</small></div>
+  <div class="list">${p.reviews.map(r => `<div class="review"><div style="display:flex;justify-content:space-between"><b>${esc(r.from)}</b>${stars(r.v,13)}</div><p>${esc(r.text)}</p></div>`).join('')}</div>
+  <div style="height:8px"></div>`;
+}
+
+// ===== Feuilles (overlays) =====
+function sheet(){
+  const s = S.sheet;
+  const wrap = (title, body, foot = '', full = false, back = false) => `<div class="sheet ${full?'full':''}" role="dialog" aria-label="${esc(title)}">${full?'':'<div class="grab"></div>'}
+    <div class="sh">${back?`<button class="icbtn" data-a="closeSheet" aria-label="Retour">${I.back}</button>`:''}<b>${title}</b>${back?'':`<button class="icbtn" data-a="closeSheet" aria-label="Fermer">${I.close}</button>`}</div>
+    <div class="sb">${body}</div>${foot?`<div class="sf">${foot}</div>`:''}</div>`;
+
+  if (s.type === 'mission'){
+    const m = missionById(s.id); const sec = SECTORS[m.sector]; const st = S.apps[m.id]; const h = hoursOf(m.hours);
+    const past = isPast(m.dates.at(-1));
+    const conflict = m.dates.some(d => upcomingForMe().some(o => o.id !== m.id && o.dates.includes(d)) || S.personal.some(p => p.date === d));
+    const body = `<div class="hero ${sec.cls}"><span class="card"><span class="sector" style="padding:5px 9px;border-radius:99px;background:rgba(255,255,255,.55);font:700 11px var(--body);text-transform:uppercase;letter-spacing:.08em">${sec.name}</span></span>
+      <h2>${esc(m.title)}</h2><div style="font-size:14px;opacity:.85">${esc(m.company)} · ${stars(m.proRating,13,'currentColor')} ${m.proRating.toFixed(1)}</div>
+      <div class="big"><div><b>${euro(m.rate)}</b><span>brut / heure</span></div><div><b>${m.dates.length} j · ${h}h</b><span>par jour</span></div><div><b>${euro(h*m.dates.length*m.rate).replace(',00','')}</b><span>total estimé</span></div></div></div>
+      <div class="list">
+        <div class="li"><div class="datebox"><b>${parse(m.dates[0]).getDate()}</b><span>${MON[parse(m.dates[0]).getMonth()]}</span></div><div class="grow"><b>${m.dates.map(dShort).join(', ')}</b><div class="sub">${m.hours}</div></div></div>
+        <div class="li"><div class="datebox">${I.pin.replace('14','20').replace('14','20')}</div><div class="grow"><b>${esc(m.city)}</b><div class="sub">${st==='accepted'||st==='done' ? esc(m.address) : 'Adresse exacte communiquée une fois retenu·e'}</div></div></div>
+      </div>
+      <div class="h2">La mission</div><p class="desc">${esc(m.desc)}</p>
+      <div class="muted" style="font-size:13px">${m.spots} poste${m.spots>1?'s':''} · contrat CDD d'usage / extra</div>
+      ${conflict && !st ? `<div class="secure" style="background:var(--warn-soft);color:var(--warn);margin-top:14px"><b>Attention :</b>&nbsp;tu as déjà quelque chose de prévu sur une de ces dates.</div>` : ''}`;
+    let foot;
+    if (!st) foot = `<button class="btn pri block" data-a="apply" data-v="${m.id}">Postuler</button>`;
+    else if (st === 'done' || past) foot = S.ratedPro[m.id] ? `<button class="btn ghost block" disabled>Mission notée ${stars(S.ratedPro[m.id],14)}</button>` : `<button class="btn ind block" data-a="rate" data-target="pro" data-v="${m.id}">Noter ${esc(m.company)}</button>`;
+    else foot = `<div style="flex:1;display:flex;align-items:center">${statusPill(st)}</div>${st==='pending'?`<button class="btn ghost" data-a="withdraw" data-v="${m.id}">Retirer</button>`:''}`;
+    return wrap('Détail de la mission', body, foot, true, true);
+  }
+
+  if (s.type === 'filters'){
+    const cities = [...new Set(M.map(m => m.city.split(' ')[0]))].sort();
+    return wrap('Filtres', `
+      <div class="field"><label for="ft_city">Ville</label><select id="ft_city" data-bind="city"><option value="all">Toutes les villes</option>${cities.map(c => `<option ${S.city===c?'selected':''}>${c}</option>`).join('')}</select></div>
+      <div class="field"><label for="ft_rate">Taux horaire minimum : <span id="rateOut">${S.minRate ? euro(S.minRate) : 'aucun'}</span></label><input type="range" id="ft_rate" min="0" max="16" step="0.5" value="${S.minRate}" data-bind="minRate" style="accent-color:var(--pink)"></div>
+      <div class="field"><label>Durée maximum</label><div class="seg">${[1,2,3,4].map(n => `<button class="${S.maxLen===n?'on':''}" data-a="maxLen" data-v="${n}">${n===4?'4 j (tout)':n+' j'}</button>`).join('')}</div></div>
+      <label class="check"><input type="checkbox" id="ft_only" ${S.dispoOnly?'checked':''} data-bind="dispoOnly"> Afficher uniquement les missions qui tiennent dans mes disponibilités</label>`,
+      `<button class="btn ghost" data-a="resetFilters">Réinitialiser</button><button class="btn pri" style="flex:1" data-a="closeSheet">Voir ${filteredMissions().length} missions</button>`);
+  }
+
+  if (s.type === 'admin'){
+    const a = S.admin; const e = s.err || {};
+    return wrap('Dossier administratif', `
+      <p class="muted" style="margin:0 0 14px;line-height:1.5">${s.applyId ? 'Dernière étape avant ta candidature : le recruteur en a besoin pour établir ton contrat et te payer.' : 'Ces documents servent à établir tes contrats et tes paiements.'}</p>
+      <div class="secure">${I.lock}<span>Prototype : ces données restent dans cette page et disparaissent au rechargement. Dans la vraie app, elles seront chiffrées et transmises uniquement au recruteur qui t'embauche.</span></div>
+      <div class="field"><label>Pièce d'identité (recto-verso)</label>
+        <label class="drop ${a.idFile?'done':''}" for="idIn">${a.idFile?I.check:I.file}<div style="flex:1;min-width:0"><b style="display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${a.idFile?esc(a.idFile):"Carte d'identité ou passeport"}</b><span class="muted" style="font-size:12.5px">Photo ou PDF</span></div></label>
+        <input type="file" id="idIn" accept="image/*,.pdf" hidden>${e.id?`<span class="err">${e.id}</span>`:''}</div>
+      <div class="field"><label for="a_nss">Numéro de sécurité sociale</label><input type="text" id="a_nss" inputmode="numeric" autocomplete="off" placeholder="15 chiffres" value="${esc(a.nss)}" data-bind="admin.nss">${e.nss?`<span class="err">${e.nss}</span>`:'<span class="hint">Il figure sur ta carte Vitale.</span>'}</div>
+      <div class="field"><label for="a_holder">Titulaire du compte</label><input type="text" id="a_holder" autocomplete="off" value="${esc(a.holder || (S.me.first+' '+S.me.last))}" data-bind="admin.holder"></div>
+      <div class="field"><label for="a_iban">IBAN (RIB)</label><input type="text" id="a_iban" autocomplete="off" placeholder="FR76 …" value="${esc(a.iban)}" data-bind="admin.iban">${e.iban?`<span class="err">${e.iban}</span>`:''}</div>
+      <label class="check"><input type="checkbox" id="a_save" ${s.save!==false?'checked':''} data-bind="sheet.save"> Enregistrer ces informations pour mes prochaines candidatures</label>
+      <button class="btn ghost small" data-a="fillAdmin">Remplir avec des valeurs fictives (démo)</button>`,
+      `<button class="btn pri block" data-a="submitAdmin">${s.applyId ? 'Envoyer ma candidature' : 'Enregistrer'}</button>`);
+  }
+
+  if (s.type === 'applied'){
+    const m = missionById(s.id);
+    return wrap('', `<div class="success"><div class="ring">${I.bigcheck}</div><h3>C'est envoyé !</h3><p class="muted" style="line-height:1.5">${esc(m.company)} a reçu ton profil, ton CV et ton message pour « ${esc(m.title)} ». Tu seras prévenu·e dès qu'il répond.</p></div>`,
+      `<button class="btn ghost" style="flex:1" data-a="goApps">Mes candidatures</button><button class="btn pri" style="flex:1" data-a="closeSheet">Continuer</button>`);
+  }
+
+  if (s.type === 'needProfile'){
+    return wrap('Complète ton profil', `<p style="line-height:1.55;margin-top:0">Pour postuler, les recruteurs ont besoin de ta <b>photo</b>, de ton <b>CV</b> et de ton <b>message de motivation</b>.</p><div class="progress"><i style="width:${profileCompletion().done/4*100}%"></i></div>`,
+      `<button class="btn pri block" data-a="goProfile">Compléter mon profil</button>`);
+  }
+
+  if (s.type === 'rate'){
+    const isPro = s.target === 'pro'; const m = missionById(s.id);
+    const who = isPro ? m.company : (p => `${p.first} ${p.last}`)(personOf(s.pid));
+    const labels = ['', 'Décevant', 'Moyen', 'Bien', 'Très bien', 'Parfait'];
+    return wrap(isPro ? 'Noter le recruteur' : "Noter l'intervenant·e", `
+      <div style="text-align:center;padding:10px 0 4px">
+        ${isPro ? `<div class="avatar" style="width:64px;height:64px;margin:0 auto;border-radius:20px;background:var(--lilac)">${LOGO(38)}</div>` : `<div style="display:flex;justify-content:center">${avatar(personOf(s.pid),64)}</div>`}
+        <div style="font:800 20px var(--display);margin-top:10px">${esc(who)}</div><div class="muted" style="font-size:13px">${esc(m.title)} · ${dRange(m.dates)}</div>
+        <div style="margin:18px 0 4px">${[1,2,3,4,5].map(i => `<button class="starbtn" data-a="setStar" data-v="${i}" aria-label="${i} étoile${i>1?'s':''}">${star(i <= (s.v||0) ? '#FF3DB4' : 'none', 40)}</button>`).join('')}</div>
+        <div style="font-weight:700;color:var(--pink);height:20px">${labels[s.v||0]}</div></div>
+      <div class="field" style="margin-top:10px"><label for="r_txt">Un mot ? (facultatif)</label><textarea id="r_txt" placeholder="${isPro ? 'Accueil, organisation, ambiance…' : 'Ponctualité, présentation, efficacité…'}" data-bind="sheet.text">${esc(s.text||'')}</textarea></div>`,
+      `<button class="btn pri block" data-a="submitRate" ${s.v?'':'disabled'}>Publier ma note</button>`);
+  }
+
+  if (s.type === 'cal') return calSheet();
+
+  if (s.type === 'addPersonal'){
+    const p = s.p; const e = s.err||{};
+    return wrap('Ajouter une mission', `
+      <p class="muted" style="margin:0 0 14px">Une mission trouvée ailleurs ? Note-la ici pour garder tout ton planning au même endroit.</p>
+      <div class="field"><label for="ap_t">Intitulé</label><input type="text" id="ap_t" value="${esc(p.title)}" data-bind="sheet.p.title" placeholder="Ex. Extra restaurant">${e.title?`<span class="err">${e.title}</span>`:''}</div>
+      <div class="two"><div class="field"><label for="ap_d">Date</label><input type="date" id="ap_d" value="${p.date}" data-bind="sheet.p.date"></div>
+      <div class="field"><label for="ap_h">Horaires</label><input type="text" id="ap_h" value="${esc(p.hours)}" data-bind="sheet.p.hours" placeholder="18h–23h"></div></div>
+      <div class="field"><label for="ap_l">Lieu</label><input type="text" id="ap_l" value="${esc(p.place)}" data-bind="sheet.p.place" placeholder="Ville ou adresse"></div>`,
+      `<button class="btn ghost" data-a="openCal">Annuler</button><button class="btn pri" style="flex:1" data-a="savePersonal">Ajouter au calendrier</button>`);
+  }
+
+  if (s.type === 'proMission'){
+    const m = missionById(s.id); const c = Object.entries(S.cands[m.id]||{}); const past = isPast(m.dates.at(-1));
+    return wrap('Ma mission', `<div class="hero ${SECTORS[m.sector].cls}"><h2 style="margin-top:0">${esc(m.title)}</h2><div style="font-size:14px">${dRange(m.dates)} · ${m.hours} · ${esc(m.city)}</div>
+      <div class="big"><div><b>${euro(m.rate)}</b><span>/ heure</span></div><div><b>${c.length}</b><span>candidats</span></div><div><b>${c.filter(([,v])=>v==='accepted').length}/${m.spots}</b><span>pourvus</span></div></div></div>
+      <p class="desc">${esc(m.desc)}</p>
+      <div class="h2">${past ? 'Intervenants' : 'Candidats'}</div>
+      <div class="list">${c.length ? c.map(([pid, st]) => past && st === 'accepted'
+        ? (p => `<div class="li">${avatar(p,46)}<div class="grow"><b>${esc(p.first)} ${esc(p.last)}</b><div class="sub">${S.ratedWorker[m.id+':'+pid] ? stars(S.ratedWorker[m.id+':'+pid],13)+' noté·e' : 'Mission terminée'}</div></div>${S.ratedWorker[m.id+':'+pid] ? '' : `<button class="btn small pri" data-a="rate" data-target="worker" data-v="${m.id}" data-p="${pid}">Noter</button>`}</div>`)(personOf(pid))
+        : candRow(m, pid, st)).join('') : '<div class="empty"><b>Pas encore de candidat</b></div>'}</div>`, '', true, true);
+  }
+
+  if (s.type === 'person'){
+    const p = personOf(s.pid); const st = (S.cands[s.m]||{})[s.pid];
+    return wrap('Profil candidat', `<div style="display:flex;gap:14px;align-items:center">${avatar(p,72)}<div><div style="font:800 22px var(--display)">${esc(p.first)} ${esc(p.last)}</div><div class="muted">${esc(p.city)}</div><div style="margin-top:4px">${stars(p.rating,15)} <b>${p.rating.toFixed(1)}</b> <span class="muted">· ${p.count} missions</span></div></div></div>
+      <div class="h2">Motivation</div><p class="desc">${esc(p.motivation || '')}</p>
+      <div class="h2">Documents</div>
+      <div class="list"><div class="li">${I.file}<div class="grow"><b>${esc(p.cv || 'CV_' + p.last + '.pdf')}</b><div class="sub">CV</div></div></div>
+      <div class="li">${I.check}<div class="grow"><b>Dossier administratif</b><div class="sub">Pièce d'identité, sécurité sociale et RIB vérifiés</div></div></div></div>`,
+      st === 'pending' ? `<button class="btn ghost" style="flex:1" data-a="decide" data-v="refused" data-m="${s.m}" data-p="${s.pid}">Refuser</button><button class="btn pri" style="flex:1" data-a="decide" data-v="accepted" data-m="${s.m}" data-p="${s.pid}">Retenir</button>` : `<div style="flex:1;text-align:center">${statusPill(st)}</div>`);
+  }
+  return '';
+}
+
+function calEvents(){
+  const ev = [];
+  if (S.role === 'cand'){
+    upcomingForMe().forEach(m => m.dates.forEach(d => ev.push({date:d, title:m.title, sub:`${m.company} · ${m.hours}`, kind:'attw', id:m.id})));
+    S.personal.forEach(p => ev.push({date:p.date, title:p.title, sub:[p.hours, p.place].filter(Boolean).join(' · '), kind:'perso', pid:p.id}));
+  } else {
+    myMissions().forEach(m => m.dates.forEach(d => ev.push({date:d, title:m.title, sub:`${Object.values(S.cands[m.id]||{}).filter(v=>v==='accepted').length}/${m.spots} pourvus · ${m.hours}`, kind:'attw', id:m.id})));
+  }
+  return ev.sort((a,b) => a.date.localeCompare(b.date));
+}
+function calSheet(){
+  const ev = calEvents(); const byDay = {}; ev.forEach(e => (byDay[e.date] ||= []).push(e));
+  const m0 = S.calMonth; const first = new Date(m0); const startOff = (first.getDay() + 6) % 7;
+  const cells = Array.from({length:42}, (_, i) => addD(i - startOff, first));
+  const monthName = m0.toLocaleDateString('fr-FR', {month:'long', year:'numeric'});
+  const sel = S.calSel;
+  const show = sel ? (byDay[sel] || []) : null;
+  const up = ev.filter(e => !isPast(e.date)); const past = ev.filter(e => isPast(e.date)).reverse();
+  const row = e => `<div class="li"><div class="datebox ${isPast(e.date)?'past':''}"><b>${parse(e.date).getDate()}</b><span>${MON[parse(e.date).getMonth()]}</span></div>
+     <div class="grow"><b>${esc(e.title)}</b><div class="sub">${esc(e.sub)}</div></div>${e.kind==='perso'?`<span class="pill ind">Perso</span>`:`<button class="btn small ghost" data-a="${S.role==='cand'?'openMission':'openProMission'}" data-v="${e.id}">Voir</button>`}</div>`;
+  const body = `<div class="cal">
+      <div class="mh"><button class="icbtn" data-a="calNav" data-v="-1" aria-label="Mois précédent">${I.back}</button><b>${monthName}</b><button class="icbtn" data-a="calNav" data-v="1" aria-label="Mois suivant" style="transform:scaleX(-1)">${I.back}</button></div>
+      <div class="grid">${['L','M','M','J','V','S','D'].map(d => `<div class="dow">${d}</div>`).join('')}
+      ${cells.map(d => { const k = iso(d); const e = byDay[k] || []; const attw = e.some(x => x.kind==='attw'); const perso = e.some(x => x.kind==='perso');
+        const cls = [d.getMonth()!==m0.getMonth()&&'o', k===iso(TODAY)&&'t', attw&&(isPast(k)?'pa':'up'), perso&&'me', sel===k&&'sel'].filter(Boolean).join(' ');
+        return `<button class="c ${cls}" data-a="calSel" data-v="${k}">${d.getDate()}</button>`; }).join('')}</div>
+      <div class="legend"><span><i style="background:var(--pink)"></i>Mission à venir</span><span><i style="background:#E7E3F5"></i>Passée</span>${S.role==='cand'?'<span><i style="background:var(--indigo);border-radius:50%"></i>Ajoutée par moi</span>':''}</div></div>
+    ${sel ? `<div class="h2">${dShort(sel)}</div><div class="list">${show.length ? show.map(row).join('') : `<div class="empty"><b>Journée libre</b>${S.role==='cand'?`<span class="muted">Marque-toi disponible pour voir les missions de ce jour.</span><div style="margin-top:12px"><button class="btn small pri" data-a="dispoFromCal" data-v="${sel}">Je suis dispo ce jour-là</button></div>`:''}</div>`}</div>` : ''}
+    <div class="h2">À venir <small>${up.length}</small></div><div class="list">${up.map(row).join('') || '<div class="empty"><b>Rien de prévu</b></div>'}</div>
+    <div class="h2">Passées <small>${past.length}</small></div><div class="list">${past.map(row).join('')}</div>`;
+  return `<div class="sheet full" role="dialog" aria-label="Calendrier"><div class="sh"><button class="icbtn" data-a="closeSheet" aria-label="Retour">${I.back}</button><b>${S.role==='cand'?'Mon calendrier':'Planning'}</b>${S.role==='cand'?`<button class="btn small pri" data-a="addPersonal">${I.plus.replace(/22/g,'16')} Ajouter</button>`:''}</div><div class="sb">${body}</div></div>`;
+}
+
+// ---------- Actions ----------
+function validNss(v){ return /^[12]\d{14}$/.test(v.replace(/\s/g,'')); }
+function validIban(v){ const s = v.replace(/\s/g,'').toUpperCase(); if (!/^FR\d{2}[0-9A-Z]{23}$/.test(s)) return false;
+  const r = s.slice(4) + s.slice(0,4); let m = 0; for (const ch of r){ const t = /\d/.test(ch) ? ch : String(ch.charCodeAt(0) - 55); for (const d of t) m = (m*10 + +d) % 97; } return m === 1; }
+function apply(id){
+  const pc = profileCompletion();
+  if (pc.done < pc.total){ S.sheet = {type:'needProfile'}; return render(); }
+  if (!S.admin.saved){ S.sheet = {type:'admin', applyId:id, save:true}; return render(); }
+  finishApply(id);
+}
+function finishApply(id){
+  S.apps[id] = 'pending';
+  const m = missionById(id); if (m.mine) (S.cands[id] ||= {}).me = 'pending';
+  S.sheet = {type:'applied', id}; render();
+}
+
+const A = {
+  role: el => { S.role = el.dataset.v || null; S.tab = 'home'; S.sheet = null; render(false); },
+  tab: el => { S.tab = el.dataset.v; S.sheet = null; render(false); },
+  toggleDay: el => { const k = el.dataset.v; S.dispo.has(k) ? S.dispo.delete(k) : S.dispo.add(k); render(); },
+  clearDispo: () => { S.dispo.clear(); render(); },
+  clearAll: () => { S.dispo.clear(); S.sector='all'; S.city='all'; S.minRate=0; S.maxLen=4; render(); },
+  sector: el => { S.sector = el.dataset.v; render(); },
+  openFilters: () => { S.sheet = {type:'filters'}; render(); },
+  maxLen: el => { S.maxLen = +el.dataset.v; render(); },
+  resetFilters: () => { S.city='all'; S.minRate=0; S.maxLen=4; S.dispoOnly=true; render(); },
+  openMission: el => { S.sheet = {type:'mission', id:+el.dataset.v}; render(); },
+  closeSheet: () => { S.sheet = null; render(); },
+  apply: el => apply(+el.dataset.v),
+  withdraw: el => { const id = +el.dataset.v; delete S.apps[id]; if (S.cands[id]) delete S.cands[id].me; S.sheet = null; toast('Candidature retirée'); },
+  goApps: () => { S.sheet = null; S.tab = 'apps'; render(false); },
+  goProfile: () => { S.sheet = null; S.tab = 'profile'; render(false); },
+  openAdmin: () => { S.sheet = {type:'admin', save:true}; render(); },
+  fillAdmin: () => { Object.assign(S.admin, {idFile: S.admin.idFile || 'CNI_exemple.jpg', nss:'2 94 03 75 116 024 41', iban:'FR76 3000 6000 0112 3456 7890 189', holder: S.me.first + ' ' + S.me.last}); S.sheet.err = {}; render(); },
+  submitAdmin: () => { const a = S.admin, e = {};
+    if (!a.idFile) e.id = "Ajoute une photo de ta pièce d'identité.";
+    if (!validNss(a.nss)) e.nss = 'Le numéro doit faire 15 chiffres et commencer par 1 ou 2.';
+    if (!validIban(a.iban)) e.iban = "Cet IBAN n'est pas valide. Vérifie les 27 caractères (FR76…).";
+    if (Object.keys(e).length){ S.sheet.err = e; return render(); }
+    const id = S.sheet.applyId; a.saved = S.sheet.save !== false;
+    if (!a.saved && !id) a.saved = true;
+    if (id){ finishApply(id); if (!a.saved){ /* non enregistré : on efface après usage */ Object.assign(a, {idFile:null, nss:'', iban:''}); } }
+    else { S.sheet = null; toast('Dossier enregistré'); }
+  },
+  saveProfile: () => toast('Profil enregistré'),
+  rate: el => { S.sheet = {type:'rate', target:el.dataset.target, id:+el.dataset.v, pid:el.dataset.p, v:0, text:''}; render(); },
+  setStar: el => { S.sheet.v = +el.dataset.v; render(); },
+  submitRate: () => { const s = S.sheet; const m = missionById(s.id);
+    if (s.target === 'pro'){ S.ratedPro[s.id] = s.v; if (m.mine){ S.pro.reviews.unshift({from:`${S.me.first} ${S.me.last[0]}.`, v:s.v, text:s.text || 'Aucun commentaire.'}); } }
+    else { S.ratedWorker[s.id+':'+s.pid] = s.v; if (s.pid === 'me') S.me.reviews.unshift({from:S.pro.company, v:s.v, text:s.text || 'Aucun commentaire.'}); }
+    S.sheet = null; toast('Merci, ta note est publiée');
+  },
+  openCal: () => { S.sheet = {type:'cal'}; render(); },
+  calNav: el => { S.calMonth = new Date(S.calMonth.getFullYear(), S.calMonth.getMonth() + +el.dataset.v, 1); render(); },
+  calSel: el => { S.calSel = S.calSel === el.dataset.v ? null : el.dataset.v; render(); },
+  dispoFromCal: el => { S.dispo.add(el.dataset.v); S.sheet = null; S.tab = 'home'; toast('Disponibilité ajoutée'); },
+  addPersonal: () => { S.sheet = {type:'addPersonal', p:{title:'', date:S.calSel || off(1), hours:'', place:''}}; render(); },
+  savePersonal: () => { const p = S.sheet.p; if (!p.title.trim()){ S.sheet.err = {title:'Donne un nom à cette mission.'}; return render(); }
+    S.personal.push({...p, id:'p'+(nextId++)}); S.calSel = p.date; S.calMonth = new Date(parse(p.date).getFullYear(), parse(p.date).getMonth(), 1); S.sheet = {type:'cal'}; render(); },
+  draftLen: el => { S.draft.len = +el.dataset.v; render(); },
+  fillDraft: () => { Object.assign(S.draft, {title:'Hôte·sse vestiaire concert', sector:'event', city:'Paris 19e', address:'Avenue Jean Jaurès, Paris 19e', rate:'14.2', hours:'18h–0h', spots:3, len:2, desc:"Gestion du vestiaire et orientation du public pour deux soirs de concert. Tenue noire demandée.", err:{}}); render(); },
+  publish: () => { const d = S.draft, e = {};
+    if (!d.title.trim()) e.title = "Indique l'intitulé du poste.";
+    if (!d.city.trim()) e.city = 'Indique la ville.';
+    if (!(+d.rate >= 11.88)) e.rate = 'Minimum 11,88 € brut (SMIC horaire).';
+    if (!hoursOf(d.hours)) e.hours = 'Format attendu : 9h–17h';
+    if (d.desc.trim().length < 20) e.desc = 'Décris la mission en quelques phrases.';
+    d.err = e; if (Object.keys(e).length) return render();
+    const start = parse(d.start); const dates = Array.from({length:d.len}, (_, i) => iso(addD(i, start)));
+    const id = nextId++;
+    M.push({id, title:d.title.trim(), company:S.pro.company, mine:true, sector:d.sector, city:d.city.trim(), address:d.address.trim() || d.city, rate:+d.rate, dates, hours:d.hours.replace('-', '–'), spots:+d.spots||1, desc:d.desc.trim(), proRating:S.pro.rating});
+    S.cands[id] = {}; S.draft = null; S.tab = 'home'; toast('Mission publiée : elle est visible côté candidats');
+  },
+  openProMission: el => { S.sheet = {type:'proMission', id:+el.dataset.v}; render(); },
+  openPerson: el => { S.sheet = {type:'person', pid:el.dataset.v, m:+el.dataset.m}; render(); },
+  decide: el => { const {m, p, v} = el.dataset; S.cands[m][p] = v; if (p === 'me') S.apps[m] = v; if (S.sheet?.type === 'person') S.sheet = null; toast(v === 'accepted' ? 'Candidat·e retenu·e et prévenu·e' : 'Réponse envoyée'); },
+};
+
+app.addEventListener('click', e => { const el = e.target.closest('[data-a]'); if (!el) return; const fn = A[el.dataset.a]; if (fn){ e.preventDefault(); fn(el); } });
+document.getElementById('roleSwitch').addEventListener('click', e => { const el = e.target.closest('[data-a]'); if (el) A.role(el); });
+
+function setPath(path, val){ const ks = path.split('.'); let o = S; while (ks.length > 1) o = o[ks.shift()]; o[ks[0]] = val; }
+app.addEventListener('input', e => { const b = e.target.dataset.bind; if (!b) return;
+  let v = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+  if (b === 'minRate'){ v = +v; const o = document.getElementById('rateOut'); if (o) o.textContent = v ? euro(v) : 'aucun'; }
+  if (b === 'draft.spots') v = +v;
+  setPath(b, v);
+});
+app.addEventListener('change', e => {
+  const t = e.target; if (t.dataset.bind && ['city','minRate','dispoOnly','draft.sector'].includes(t.dataset.bind)) render();
+  if (t.type !== 'file' || !t.files[0]) return; const f = t.files[0];
+  if (t.id === 'cvIn'){ S.me.cv = f.name; render(); toast('CV importé'); }
+  if (t.id === 'idIn'){ S.admin.idFile = f.name; render(); }
+  if (t.id === 'photoIn' || t.id === 'logoIn'){ const r = new FileReader(); r.onload = () => { if (t.id === 'photoIn') S.me.photo = r.result; else S.pro.logo = r.result; render(); toast(t.id === 'photoIn' ? 'Photo mise à jour' : 'Logo mis à jour'); }; r.readAsDataURL(f); }
+});
+
+render();
+</script>
+
+</body>
+</html>
